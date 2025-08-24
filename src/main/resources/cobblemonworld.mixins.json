@@ -4,6 +4,7 @@
   "package": "com.cobbleworldmmo.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "BattlePreviewMixin"
   ],
   "injectors": {
     "defaultRequire": 1
