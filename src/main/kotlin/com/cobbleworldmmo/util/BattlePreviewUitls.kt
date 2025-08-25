@@ -1,11 +1,15 @@
 package com.cobbleworldmmo.util
 
+import ca.landonjw.gooeylibs2.api.button.ButtonAction
 import ca.landonjw.gooeylibs2.api.button.ButtonBase
 import ca.landonjw.gooeylibs2.api.button.GooeyButton
+import ca.landonjw.gooeylibs2.api.template.types.ChestTemplate
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.battles.ChallengeManager.BattleChallenge
 import com.cobblemon.mod.common.battles.ShowdownPokemon
+import com.cobblemon.mod.common.item.PokemonItem
 import com.cobblemon.mod.common.pokemon.Pokemon
+import com.cobbleworldmmo.gui.BattlePreviewMenu.Companion
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.NbtCompound
