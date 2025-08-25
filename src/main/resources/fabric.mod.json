@@ -4,8 +4,12 @@
   "version": "${version}",
   "name": "CobbleWorldMMO",
   "description": "",
-  "authors": [],
-  "contact": {},
+  "authors": [
+    "saultsc"
+  ],
+  "contact": {
+    "homepage": "https://discord.gg/cobbleworldmmo"
+  },
   "license": "All-Rights-Reserved",
   "environment": "*",
   "entrypoints": {
