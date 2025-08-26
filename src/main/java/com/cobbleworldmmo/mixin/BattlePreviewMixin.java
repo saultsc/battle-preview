@@ -25,8 +25,6 @@ public class BattlePreviewMixin {
 
         new BattlePreviewMenu().open(challenge.getSender(), challenge.getReceiver());
 
-
-
         CobbleWorldMMO.LOGGER.info("BattlePreviewMixin: onAccept");
     }
 }

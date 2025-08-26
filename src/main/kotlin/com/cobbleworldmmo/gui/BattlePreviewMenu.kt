@@ -6,11 +6,16 @@ import ca.landonjw.gooeylibs2.api.button.GooeyButton
 import ca.landonjw.gooeylibs2.api.page.GooeyPage
 import ca.landonjw.gooeylibs2.api.template.types.ChestTemplate
 import com.cobblemon.mod.common.item.PokemonItem
+import com.cobbleworldmmo.cwmmoutils.utils.ItemModelUtils
+import com.cobbleworldmmo.cwmmoutils.utils.PlayerHeadUtils
 import com.cobbleworldmmo.gui.components.PokemonSelectButton
 import com.cobbleworldmmo.util.BattlePreviewUitls
+import net.minecraft.data.client.ItemModelGenerator
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
+import kotlin.text.get
+import kotlin.text.set
 
 class BattlePreviewMenu {
   companion object {
@@ -30,24 +35,25 @@ class BattlePreviewMenu {
     val (senderTeam, opponentTeam) = BattlePreviewUitls.getBattleTeams(sender, opponent)
 
     val playerSenderHead = GooeyButton.builder()
-      .display(BattlePreviewUitls.getPlayerHead(sender))
+      .display(PlayerHeadUtils.getHead(sender.uuid).left)
       .build()
 
-    senderTeam.forEachIndexed { index, pokemonList ->
-      val pokemonItem = PokemonItem.from(pokemonList.second)
-      val pokemonButton = PokemonSelectButton(pokemonItem)
-      template.set(senderSlots[index], pokemonButton)
+    for (index in senderSlots.indices) {
+        val pokemon = senderTeam.getOrNull(index)?.second
+        val pokemonItem: ItemStack? = if (pokemon != null) PokemonItem.from(pokemon) else null
+        val pokemonButton = PokemonSelectButton(pokemonItem, senderSlots[index])
+        template.set(senderSlots[index], pokemonButton)
     }
 
     val playerOpponentHead = GooeyButton.builder()
-      .display(BattlePreviewUitls.getPlayerHead(opponent))
+      .display(PlayerHeadUtils.getHead(opponent.uuid).left)
       .build()
 
-    opponentTeam.forEachIndexed { index, pokemonList ->
-      val pokemonButton = GooeyButton.builder()
-        .display(PokemonItem.from(pokemonList.second))
-        .build()
-      template.set(opponentsSlots[index], pokemonButton)
+    for (index in opponentsSlots.indices) {
+        val pokemon = opponentTeam.getOrNull(index)?.second
+        val pokemonItem: ItemStack? = if (pokemon != null) PokemonItem.from(pokemon) else null
+        val pokemonButton = PokemonSelectButton(pokemonItem, opponentsSlots[index], true)
+        template.set(opponentsSlots[index], pokemonButton)
     }
 
     template.set(senderHeadSlot, playerSenderHead)
