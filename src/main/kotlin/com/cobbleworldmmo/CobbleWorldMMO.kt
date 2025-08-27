@@ -1,5 +1,7 @@
 package com.cobbleworldmmo
 
+import com.cobblemon.mod.common.battles.BattleType
+import com.cobblemon.mod.common.battles.BattleTypes
 import net.fabricmc.api.ModInitializer
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger

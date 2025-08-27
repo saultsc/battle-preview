@@ -48,4 +48,20 @@ object BattlePreviewUitls {
 
     return head
   }
+
+  interface MaxPokemonSelector {
+    fun getMaxPokemon(format: String): Int
+  }
+
+  class DefaultMaxPokemonSelector : MaxPokemonSelector {
+    override fun getMaxPokemon(format: String): Int {
+      return when (format.lowercase()) {
+        "singles" -> 1
+        "doubles" -> 2
+        "triples" -> 3
+        "vgc" -> 4
+        else -> 1
+      }
+    }
+  }
 }

@@ -5,34 +5,35 @@ import ca.landonjw.gooeylibs2.api.button.ButtonBase
 import com.cobbleworldmmo.adapters.itemModelAdapter
 import net.minecraft.item.ItemStack
 
-class PokemonSelectButton(private val pokemonItem: ItemStack?, slot: Int, private val isLocked: Boolean = false) :
-  ButtonBase(
-    pokemonItem ?: itemModelAdapter(
-      slot = slot,
-      item = "minecraft:gray_wool",
-      name = "",
-      listOf(),
-      customModelData = 0,
-      hideFlags = true,
-    ).createItem()
-  ) {
+class PokemonSelectButton(
+  private val pokemonItem: ItemStack?,
+  slot: Int,
+  private val isLocked: Boolean = false,
+  private val onSelect: ((Boolean) -> Boolean)? = null
+) : ButtonBase(
+  pokemonItem ?: itemModelAdapter(
+    slot = slot,
+    item = "minecraft:gray_wool",
+    name = "No Pokemon"
+  ).createItem()
+) {
   private var active = false
-  private val selectedName: String = pokemonItem?.let { "§aSelected: ${it.name.string}" } ?: ""
+  private val selectedName = if (pokemonItem != null) "§a${pokemonItem.name.string} Selected" else "Selected"
 
   val greenWool = itemModelAdapter(
     slot = slot,
-    item = "minecraft:green_wool",
+    item = "minecraft:lime_wool",
     name = selectedName.takeIf { it.isNotEmpty() } ?: "",
   ).createItem()
 
   override fun onClick(action: ButtonAction) {
     if (isLocked || pokemonItem == null) return
 
-    if (active) {
-      setDisplay(pokemonItem)
-    } else {
-      setDisplay(greenWool)
-    }
-    active = !active
+    val nextState = !active
+    val allowed = onSelect?.invoke(nextState) ?: true
+    if (!allowed) return
+
+    setDisplay(if (nextState) greenWool else pokemonItem)
+    active = nextState
   }
 }
