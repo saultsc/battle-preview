@@ -7,9 +7,11 @@ import net.minecraft.item.ItemStack
 
 class PokemonSelectButton(
   private val pokemonItem: ItemStack?,
-  slot: Int,
+  private val slot: Int,
+  private val selectedSlots: MutableList<Int>? = null,
+  private val maxSelect: Int? = null,
+  private val onSelectionCountChanged: ((Int) -> Unit)? = null,
   private val isLocked: Boolean = false,
-  private val onSelect: ((Boolean) -> Boolean)? = null
 ) : ButtonBase(
   pokemonItem ?: itemModelAdapter(
     slot = slot,
@@ -28,12 +30,14 @@ class PokemonSelectButton(
 
   override fun onClick(action: ButtonAction) {
     if (isLocked || pokemonItem == null) return
+    if (selectedSlots == null || maxSelect == null || onSelectionCountChanged == null) return
 
     val nextState = !active
-    val allowed = onSelect?.invoke(nextState) ?: true
-    if (!allowed) return
+    if (nextState && selectedSlots.size >= maxSelect) return
+    if (nextState) selectedSlots.add(slot) else selectedSlots.remove(slot)
 
     setDisplay(if (nextState) greenWool else pokemonItem)
     active = nextState
+    onSelectionCountChanged(selectedSlots.size)
   }
 }

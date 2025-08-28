@@ -11,10 +11,6 @@ import com.cobbleworldmmo.gui.components.PokemonSelectButton
 import com.cobbleworldmmo.util.BattlePreviewUitls
 import net.minecraft.item.ItemStack
 import net.minecraft.server.network.ServerPlayerEntity
-import kotlin.collections.remove
-import kotlin.text.compareTo
-import kotlin.text.get
-import kotlin.text.set
 
 class BattlePreviewMenu(
   private val confirmSelection: Boolean = false,
@@ -31,6 +27,7 @@ class BattlePreviewMenu(
   }
 
   private val selectedSlots = mutableListOf<Int>()
+  private val pokemonButtons = mutableListOf<PokemonSelectButton>()
 
   fun open(
     sender: ServerPlayerEntity,
@@ -39,27 +36,27 @@ class BattlePreviewMenu(
     val template = ChestTemplate.builder(rows).build()
     val (senderTeam, opponentTeam) = BattlePreviewUitls.getBattleTeams(sender, opponent)
 
-
-    // sender team
     val playerSenderHead = GooeyButton.builder()
       .display(PlayerHeadUtils.getHead(sender.uuid).left)
       .build()
+
+    lateinit var toggleSelection: ConfirmSelectionButton
 
     for (index in senderSlots.indices) {
       val pokemon = senderTeam.getOrNull(index)?.second
       val pokemonItem: ItemStack? = if (pokemon != null) PokemonItem.from(pokemon) else null
       val slot = senderSlots[index]
-      val pokemonButton = PokemonSelectButton(pokemonItem, slot, false) { isSelected: Boolean ->
-        when {
-          isSelected && selectedSlots.size < maxPokemonSelect -> selectedSlots.add(slot)
-          !isSelected -> selectedSlots.remove(slot)
-        }
-        !isSelected || selectedSlots.size <= maxPokemonSelect
-      }
+      val pokemonButton = PokemonSelectButton(
+        pokemonItem,
+        slot,
+        selectedSlots,
+        maxPokemonSelect,
+        onSelectionCountChanged = { count -> toggleSelection.updateSelection(count) },
+      )
+      pokemonButtons.add(pokemonButton)
       template.set(slot, pokemonButton)
     }
 
-    // opponent team
     val playerOpponentHead = GooeyButton.builder()
       .display(PlayerHeadUtils.getHead(opponent.uuid).left)
       .build()
@@ -68,11 +65,11 @@ class BattlePreviewMenu(
       val pokemon = opponentTeam.getOrNull(index)?.second
       val pokemonItem: ItemStack? = if (pokemon != null) PokemonItem.from(pokemon) else null
       val slot = opponentsSlots[index]
-      val pokemonButton = PokemonSelectButton(pokemonItem, slot, true)
+      val pokemonButton = PokemonSelectButton(pokemonItem, slot, isLocked = true )
       template.set(slot, pokemonButton)
     }
 
-    val toggleSelection = ConfirmSelectionButton(toggleConfirmSlot, confirmSelection)
+    toggleSelection = ConfirmSelectionButton(toggleConfirmSlot, confirmSelection, selectedSlots.size, maxPokemonSelect)
     template.set(toggleConfirmSlot, toggleSelection)
 
     template.set(senderHeadSlot, playerSenderHead)
